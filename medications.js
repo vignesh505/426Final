@@ -38,6 +38,29 @@ router.delete('/:id', authMiddleware, (req, res) => {
     res.json({ message: 'Medication deleted successfully!' });
   });
 });
+router.put('/:id', authMiddleware, (req, res) => {
+  const { id } = req.params;
+  const { name, dosage, frequency, time } = req.body;
 
+  if (!name || !dosage || !frequency || !time) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
+
+  db.run(
+    `UPDATE medications 
+     SET name = ?, dosage = ?, frequency = ?, time = ? 
+     WHERE id = ? AND user_id = ?`,
+    [name, dosage, frequency, time, id, req.session.userId],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: 'Database error.' });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ error: 'Medication not found.' });
+      }
+      res.json({ message: 'Medication updated successfully!' });
+    }
+  );
+});
 module.exports = router;
 
