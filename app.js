@@ -196,5 +196,4 @@ findMedicationButton?.addEventListener('click', async () => {
   }
 });
 
-// Auto-load on Dashboard
 if (dashboard) loadMedications();
