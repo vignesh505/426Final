@@ -6,7 +6,8 @@ const authContainer = document.getElementById('auth-container');
 const dashboard = document.getElementById('dashboard');
 const logoutButton = document.getElementById('logout-button');
 const findMedicationButton = document.getElementById('find-medication');
-
+const addCategoryForm = document.getElementById('add-category-form');
+const categoryList = document.getElementById('category-list');
 
 registerForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -208,5 +209,81 @@ findMedicationButton?.addEventListener('click', async () => {
     alert('Error fetching medication details. Please try again later.');
   }
 });
+async function loadCategories() {
+  const response = await fetch('/categories');
+  if (response.ok) {
+    const categories = await response.json();
+    categoryList.innerHTML = categories
+      .map(
+        (category) =>
+          `<li>
+            ${category.name}
+            <button onclick="editCategory(${category.id}, '${category.name}')">Edit</button>
+            <button onclick="deleteCategory(${category.id})">Delete</button>
+          </li>`
+      )
+      .join('');
+  } else {
+    alert('Failed to load categories.');
+  }
+}
+
+
+addCategoryForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('category-name').value;
+
+  const response = await fetch('/categories', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
+
+  if (response.ok) {
+    alert('Category added successfully!');
+    loadCategories();
+    addCategoryForm.reset();
+  } else {
+    alert('Failed to add category.');
+  }
+});
+
+
+async function editCategory(id, oldName) {
+  const newName = prompt('Enter new category name:', oldName);
+  if (!newName) return;
+
+  const response = await fetch(`/categories/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: newName }),
+  });
+
+  if (response.ok) {
+    alert('Category updated successfully!');
+    loadCategories();
+  } else {
+    alert('Failed to update category.');
+  }
+}
+
+async function deleteCategory(id) {
+  const confirmDelete = confirm('Are you sure you want to delete this category?');
+  if (!confirmDelete) return;
+
+  const response = await fetch(`/categories/${id}`, { method: 'DELETE' });
+
+  if (response.ok) {
+    alert('Category deleted successfully!');
+    loadCategories();
+  } else {
+    alert('Failed to delete category.');
+  }
+}
+
+
+if (categoryList) {
+  loadCategories();
+}
 
 if (dashboard) loadMedications();
