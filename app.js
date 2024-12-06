@@ -82,7 +82,20 @@ addMedicationForm?.addEventListener('submit', async (e) => {
   }
 });
 
+async function updateMedication(id, updatedDetails) {
+  const response = await fetch(`/medications/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updatedDetails),
+  });
 
+  if (response.ok) {
+    alert('Medication updated successfully!');
+    loadMedications();
+  } else {
+    alert('Failed to update medication.');
+  }
+}
 async function loadMedications() {
   const response = await fetch('/medications');
   if (response.ok) {
