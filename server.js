@@ -7,11 +7,12 @@ const path = require('path');
 
 const app = express();
 const PORT = 3000;
+const categoriesRoutes = require('./categories');
 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use('/categories', categoriesRoutes);
 
 app.use(
   session({
