@@ -8,7 +8,12 @@ db.run(`
     password TEXT NOT NULL
   )
 `);
-
+db.run(CREATE TABLE IF NOT EXISTS categories (`
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  user_id INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+`);
 db.run(`
   CREATE TABLE IF NOT EXISTS medications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
